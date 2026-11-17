@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Production builds
+dist/
+build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Caches
+.vite/
+.DS_Store
+Thumbs.db

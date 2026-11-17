@@ -1,0 +1,60 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isValidMenuItem(data) {
+      return data.name is string && data.name.size() > 0 &&
+             data.price is number && data.price >= 0 &&
+             data.available is bool &&
+             data.isVeg is bool &&
+             data.isPopular is bool;
+    }
+
+    match /menuItems/{id} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidMenuItem(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /gallery/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /messages/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name','email','phone','message','status','createdAt','source'])
+                    && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100
+                    && request.resource.data.email is string && request.resource.data.email.size() <= 200
+                    && request.resource.data.phone is string && request.resource.data.phone.size() <= 20
+                    && request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 2000
+                    && request.resource.data.status == 'new'
+                    && request.resource.data.source == 'website'
+                    && request.resource.data.createdAt == request.time;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
