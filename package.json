@@ -1,0 +1,7 @@
+{
+  "name": "cafe-website",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-all.mjs"
+  }
+}
