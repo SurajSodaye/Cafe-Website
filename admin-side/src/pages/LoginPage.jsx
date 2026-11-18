@@ -166,7 +166,7 @@ export const LoginPage = () => {
         {/* Back Link */}
         <div className="text-center">
           <a
-            href="http://localhost:5173"
+            href={import.meta.env.VITE_PUBLIC_URL || '/'}
             className="text-xs font-medium text-espresso/60 hover:text-espresso transition-colors"
           >
             ← Return to Public Cafe Website

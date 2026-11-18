@@ -111,7 +111,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
         {/* Footer Area: Public Site Link & Info */}
         <div className="p-4 border-t border-cream/10 bg-black/10">
           <a
-            href="http://localhost:5173"
+            href={import.meta.env.VITE_PUBLIC_URL || '/'}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-cream/80 hover:bg-white/10 hover:text-cream transition-colors border border-cream/10"

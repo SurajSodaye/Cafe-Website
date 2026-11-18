@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Coffee, Menu as MenuIcon, X, MapPin, Phone } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useSecretClicks } from '../../hooks/useSecretClicks';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -21,6 +22,15 @@ export function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const adminLoginUrl = import.meta.env.VITE_ADMIN_URL || '/admin/login';
+  const handleLogoClick = useSecretClicks({
+    clicks: 5,
+    windowMs: 3000,
+    onTrigger: () => {
+      window.location.assign(adminLoginUrl);
+    },
+  });
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -52,6 +62,7 @@ export function Header() {
             {/* Logo & Brand */}
             <Link
               to="/"
+              onClick={handleLogoClick}
               className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500 rounded-lg p-1 -ml-1"
               aria-label="Brew & Bloom Café Home"
             >

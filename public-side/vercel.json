@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "ADMIN_PROJECT_URL/" },
+    { "source": "/admin/:path*", "destination": "ADMIN_PROJECT_URL/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/admin/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ]
+}
