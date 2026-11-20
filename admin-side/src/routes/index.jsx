@@ -4,6 +4,7 @@ import { AdminLayout } from "../components/layout/AdminLayout";
 import { ProtectedRoute, PublicOnlyRoute } from "../components/layout/ProtectedRoute";
 import { LoginPage } from "../pages/LoginPage";
 import { DashboardPage } from "../pages/DashboardPage";
+import { OrdersPage } from "../pages/OrdersPage";
 import { MessagesPage } from "../pages/MessagesPage";
 import { MenuItemsPage } from "../pages/MenuItemsPage";
 import { CategoriesPage } from "../pages/CategoriesPage";
@@ -36,6 +37,7 @@ export const AppRoutes = () => {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/menu-items" element={<MenuItemsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />

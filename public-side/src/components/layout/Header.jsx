@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Coffee, Menu as MenuIcon, X, MapPin, Phone } from 'lucide-react';
+import { Coffee, Menu as MenuIcon, X, MapPin, Phone, ShoppingBag, User, LogOut } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useSecretClicks } from '../../hooks/useSecretClicks';
+import { useCart } from '../../context/CartContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  const { totalItems, openCart } = useCart();
+  const { user, logout } = useCustomerAuth();
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -99,15 +104,64 @@ export function Header() {
             </nav>
 
             {/* Desktop CTA & Mobile Toggle */}
-            <div className="flex items-center gap-3">
-              <div className="hidden sm:block">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Shopping Cart Button */}
+              <button
+                type="button"
+                onClick={openCart}
+                className="relative p-2 rounded-xl text-espresso-700 hover:text-espresso-950 hover:bg-espresso-50/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500"
+                aria-label={`Open order tray with ${totalItems} items`}
+              >
+                <ShoppingBag className="w-5 h-5 text-espresso-800" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-terracotta-500 text-white text-[10px] font-bold flex items-center justify-center shadow-xs animate-in zoom-in-75">
+                    {totalItems > 99 ? '99+' : totalItems}
+                  </span>
+                )}
+              </button>
+
+              {/* Customer Account / Sign In */}
+              {user ? (
+                <div className="hidden sm:flex items-center gap-2 pl-1 border-l border-espresso-200/60">
+                  <Link
+                    to="/my-orders"
+                    className="text-xs font-semibold text-espresso-800 hover:text-terracotta-600 px-2 py-1.5 rounded-lg hover:bg-espresso-50 transition-colors flex items-center gap-1"
+                    title="View My Orders"
+                  >
+                    <span>My Orders</span>
+                  </Link>
+                  <span className="text-xs font-medium text-espresso-500 max-w-[90px] truncate" title={user.displayName || user.email}>
+                    ({user.displayName || user.email?.split('@')[0]})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => logout()}
+                    className="p-1.5 text-espresso-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Sign Out"
+                    aria-label="Sign out of customer account"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="hidden sm:block pl-1 border-l border-espresso-200/60">
+                  <Link
+                    to="/login"
+                    className="text-xs font-bold text-espresso-800 hover:text-terracotta-600 px-2 py-1.5 rounded-lg transition-colors"
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              )}
+
+              <div className="hidden md:block">
                 <Button
                   to="/menu"
                   variant="primary"
                   size="sm"
                   className="font-medium"
                 >
-                  View Menu
+                  Order Menu
                 </Button>
               </div>
 
@@ -154,7 +208,58 @@ export function Header() {
               ))}
             </nav>
 
+            {/* Mobile Order & Account Bar */}
             <div className="pt-3 border-t border-espresso-100 flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openCart();
+                }}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-cream-200/80 text-espresso-900 font-bold text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-terracotta-600" />
+                  <span>View Order Tray</span>
+                </div>
+                <span className="text-xs bg-espresso-800 text-white px-2 py-0.5 rounded-full font-bold">
+                  {totalItems}
+                </span>
+              </button>
+
+              {user ? (
+                <div className="flex flex-col gap-1.5 px-3 py-2 bg-white rounded-xl border border-espresso-100 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-espresso-800 truncate">
+                      👤 {user.displayName || user.email}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => logout()}
+                      className="text-red-600 font-bold hover:underline"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                  <Link
+                    to="/my-orders"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-terracotta-700 font-semibold pt-1 border-t border-espresso-100 flex items-center justify-between"
+                  >
+                    <span>View My Orders</span>
+                    <span>&rarr;</span>
+                  </Link>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center py-2.5 rounded-xl border border-espresso-200 bg-white text-espresso-800 font-bold text-sm hover:bg-cream-100"
+                >
+                  Customer Sign In
+                </Link>
+              )}
+
               <Button to="/menu" variant="primary" size="md" className="w-full justify-center">
                 Explore Full Menu
               </Button>

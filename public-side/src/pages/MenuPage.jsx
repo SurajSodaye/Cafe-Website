@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SEO } from '../components/layout/SEO';
 import { CategoryBar } from '../components/menu/CategoryBar';
 import { FilterBar } from '../components/menu/FilterBar';
 import { MenuItemCard } from '../components/menu/MenuItemCard';
+import { ItemDetailModal } from '../components/menu/ItemDetailModal';
 import { MenuItemSkeleton } from '../components/ui/Skeleton';
 import { EmptyState } from '../components/ui/EmptyState';
 import { useMenu } from '../hooks/useMenu';
@@ -11,6 +12,7 @@ import { useMenu } from '../hooks/useMenu';
 export default function MenuPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryFromUrl = searchParams.get('category') || 'all';
+  const [selectedItemForModal, setSelectedItemForModal] = useState(null);
 
   const {
     categories,
@@ -136,12 +138,23 @@ export default function MenuPage() {
           {!itemsLoading && !itemsError && menuItems.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {menuItems.map((item) => (
-                <MenuItemCard key={item.id} item={item} />
+                <MenuItemCard
+                  key={item.id}
+                  item={item}
+                  onSelect={(selected) => setSelectedItemForModal(selected)}
+                />
               ))}
             </div>
           )}
         </div>
       </section>
+
+      {/* Item Customization & Details Modal */}
+      <ItemDetailModal
+        item={selectedItemForModal}
+        isOpen={Boolean(selectedItemForModal)}
+        onClose={() => setSelectedItemForModal(null)}
+      />
     </>
   );
 }

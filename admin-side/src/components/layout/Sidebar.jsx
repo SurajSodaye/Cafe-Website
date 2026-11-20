@@ -9,12 +9,15 @@ import {
   ExternalLink,
   X,
   Sparkles,
-  Mail
+  Mail,
+  ShoppingBag
 } from "lucide-react";
 import { useMessages } from "../../hooks/useMessages";
+import { useOrders } from "../../hooks/useOrders";
 
 const NAV_ITEMS = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { name: "Orders", path: "/orders", icon: ShoppingBag, badgeKey: "orders" },
   { name: "Messages", path: "/messages", icon: Mail, badgeKey: "messages" },
   { name: "Menu Items", path: "/menu-items", icon: Coffee },
   { name: "Categories", path: "/categories", icon: Tags },
@@ -24,6 +27,7 @@ const NAV_ITEMS = [
 
 export const Sidebar = ({ isOpen, onClose }) => {
   const { newCount } = useMessages();
+  const { newCount: newOrdersCount } = useOrders();
   return (
     <>
       {/* Mobile Backdrop */}
@@ -95,6 +99,14 @@ export const Sidebar = ({ isOpen, onClose }) => {
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">{item.name}</span>
                 </div>
+                {item.badgeKey === "orders" && newOrdersCount > 0 && (
+                  <span
+                    title={`${newOrdersCount} new order${newOrdersCount > 1 ? "s" : ""}`}
+                    className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-amber-400 text-espresso-dark shadow-xs animate-pulse"
+                  >
+                    {newOrdersCount}
+                  </span>
+                )}
                 {item.badgeKey === "messages" && newCount > 0 && (
                   <span
                     title={`${newCount} unread message${newCount > 1 ? "s" : ""}`}

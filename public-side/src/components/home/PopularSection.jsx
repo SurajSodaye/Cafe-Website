@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Flame } from 'lucide-react';
+import { ArrowRight, Flame, Plus } from 'lucide-react';
 import { usePopularItems } from '../../hooks/useMenu';
 import { DietaryBadge, PopularBadge, SoldOutBadge } from '../ui/Badge';
 import { Card, MenuItemSkeleton } from '../ui/Skeleton';
 import { Button } from '../ui/Button';
+import { ItemDetailModal } from '../menu/ItemDetailModal';
 import { SVG_FALLBACK_IMAGE, PRIMARY_FALLBACK_IMAGE } from '../../utils/imageFallback';
 
 export function PopularSection() {
   const { popularItems, loading, error } = usePopularItems(4);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   return (
     <section className="py-16 sm:py-20 bg-cream-50 border-y border-espresso-100/60">
@@ -67,7 +69,8 @@ export function PopularSection() {
             {popularItems.map((item) => (
               <Card
                 key={item.id}
-                className="group flex flex-col justify-between hover:border-terracotta-300 transition-all duration-300"
+                className="group flex flex-col justify-between hover:border-terracotta-300 transition-all duration-300 cursor-pointer"
+                onClick={() => setSelectedItem(item)}
               >
                 <div>
                   {/* Image Container with Badges */}
@@ -78,7 +81,6 @@ export function PopularSection() {
                       loading="lazy"
                       decoding="async"
                       referrerPolicy="no-referrer"
-                      crossOrigin="anonymous"
                       width="500"
                       height="375"
                       onError={(e) => {
@@ -122,22 +124,35 @@ export function PopularSection() {
                 </div>
 
                 {/* Footer Action */}
-                <div className="px-5 pb-5 pt-0">
-                  <Button
-                    to={`/menu?category=${item.category}`}
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-between text-xs font-semibold text-terracotta-600 bg-cream-100/60 hover:bg-terracotta-50 hover:text-terracotta-700 py-2 border border-espresso-100/60"
+                <div className="px-5 pb-5 pt-0 flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedItem(item);
+                    }}
+                    className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                      item.available
+                        ? 'bg-cream-100 hover:bg-terracotta-500 text-espresso-800 hover:text-white border border-espresso-200/80 hover:border-terracotta-500'
+                        : 'bg-espresso-100 text-espresso-400 cursor-not-allowed'
+                    }`}
                   >
-                    <span>View on Menu</span>
-                    <span aria-hidden="true">→</span>
-                  </Button>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>{item.available ? 'Add to Tray' : 'Sold Out'}</span>
+                  </button>
                 </div>
               </Card>
             ))}
           </div>
         )}
       </div>
+
+      {/* Item Customizer Modal */}
+      <ItemDetailModal
+        item={selectedItem}
+        isOpen={Boolean(selectedItem)}
+        onClose={() => setSelectedItem(null)}
+      />
     </section>
   );
 }

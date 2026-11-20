@@ -3,6 +3,7 @@ import { Outlet, ScrollRestoration } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileBottomBar } from './MobileBottomBar';
+import { CartDrawer } from '../cart/CartDrawer';
 import { useCafeInfo } from '../../hooks/useCafeInfo';
 
 export function Layout() {
@@ -16,6 +17,7 @@ export function Layout() {
       </main>
       <Footer cafeInfo={cafeInfo} />
       <MobileBottomBar cafeInfo={cafeInfo} />
+      <CartDrawer />
       {/* Scroll restoration for smooth page transitions */}
       <ScrollRestoration />
     </div>

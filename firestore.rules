@@ -15,27 +15,32 @@ service cloud.firestore {
              data.isPopular is bool;
     }
 
+    // Menu Items
     match /menuItems/{id} {
       allow read: if true;
       allow create, update: if isAdmin() && isValidMenuItem(request.resource.data);
       allow delete: if isAdmin();
     }
 
+    // Categories
     match /categories/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Gallery
     match /gallery/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Settings
     match /settings/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
+    // Contact Messages
     match /messages/{id} {
       allow create: if request.resource.data.keys().hasOnly(['name','email','phone','message','status','createdAt','source'])
                     && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 100
@@ -48,9 +53,56 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Admin Profiles
     match /admins/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
+    }
+
+    // Customer Profiles
+    match /customers/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isAdmin();
+    }
+
+    // Validation function for direct customer order requests
+    function isValidOrderRequest(data) {
+      return data.customerId == request.auth.uid &&
+             data.customerName is string && data.customerName.size() > 0 && data.customerName.size() <= 100 &&
+             data.customerPhone is string && data.customerPhone.size() >= 7 && data.customerPhone.size() <= 25 &&
+             data.items is list && data.items.size() > 0 && data.items.size() <= 50 &&
+             data.fulfillmentType in ['dinein', 'takeaway', 'delivery', 'dine_in'] &&
+             data.fulfillmentDetails is map &&
+             data.customerQuotedSubtotal is number && data.customerQuotedSubtotal >= 0 &&
+             data.customerQuotedTotal is number && data.customerQuotedTotal >= 0 &&
+             data.paymentMethod == 'cash' &&
+             data.paymentStatus == 'pending' &&
+             data.orderStatus == 'received' &&
+             data.priceVerificationStatus == 'unverified' &&
+             data.adminVerifiedSubtotal == null &&
+             data.adminVerifiedTotal == null &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    // Order Requests Collection (Direct Firestore Architecture for Spark Free Plan)
+    // - Customers can CREATE their own orders with strictly validated initial state.
+    // - Customers can READ ONLY their own orders (matching customerId == auth.uid).
+    // - Customers CANNOT update or delete orders after creation.
+    // - Authorized Admins have full operational read access and can update status / verified totals.
+    match /orderRequests/{orderId} {
+      allow read: if (request.auth != null && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if request.auth != null && isValidOrderRequest(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Legacy / Admin Orders Collection
+    match /orders/{orderId} {
+      allow read: if (request.auth != null && resource.data.customerId == request.auth.uid) || isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {

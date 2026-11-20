@@ -9,6 +9,10 @@ const ContactPage = lazy(() => import('../pages/ContactPage'));
 const AboutPage = lazy(() => import('../pages/AboutPage'));
 const GalleryPage = lazy(() => import('../pages/GalleryPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
+const CustomerLoginPage = lazy(() => import('../pages/CustomerLoginPage'));
+const OrderConfirmationPage = lazy(() => import('../pages/OrderConfirmationPage'));
+const MyOrdersPage = lazy(() => import('../pages/MyOrdersPage'));
 
 /**
  * Route loading fallback component
@@ -23,26 +27,6 @@ function PageLoader() {
     </div>
   );
 }
-
-/**
- * APPLICATION ROUTES
- *
- * NOTE FOR FUTURE PHASE (FIREBASE & ADMIN INTEGRATION):
- * When adding Firebase and the Admin Panel:
- * 1. Create an `<AdminLayout />` and `<ProtectedRoute />` component in src/components/layout/
- * 2. Add an `/admin` route group here:
- *    {
- *      path: '/admin',
- *      element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
- *      children: [
- *        { index: true, element: <AdminDashboard /> },
- *        { path: 'menu', element: <AdminMenuEditor /> },
- *        { path: 'gallery', element: <AdminGalleryManager /> },
- *        { path: 'hours', element: <AdminHoursEditor /> },
- *      ]
- *    }
- * 3. Add `/admin/login` for Firebase Auth (Google / Email+Password).
- */
 
 export const router = createBrowserRouter([
   {
@@ -88,6 +72,42 @@ export const router = createBrowserRouter([
             <ContactPage />
           </Suspense>
         ),
+      },
+      {
+        path: 'checkout',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CheckoutPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'order-confirmation/:orderId',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <OrderConfirmationPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'my-orders',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <MyOrdersPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'login',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <CustomerLoginPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'cart',
+        element: <Navigate to="/menu" replace />,
       },
       {
         path: '404',

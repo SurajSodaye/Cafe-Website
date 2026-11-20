@@ -13,12 +13,14 @@ import {
   TrendingUp,
   AlertCircle,
   Mail,
-  MessageSquare
+  MessageSquare,
+  ShoppingBag
 } from "lucide-react";
 import { useMenuItems } from "../hooks/useMenuItems";
 import { useCategories } from "../hooks/useCategories";
 import { useSettings } from "../hooks/useSettings";
 import { useMessages } from "../hooks/useMessages";
+import { useOrders } from "../hooks/useOrders";
 import { Badge, VegIndicator } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { CardSkeleton } from "../components/ui/SkeletonLoader";
@@ -50,6 +52,7 @@ export const DashboardPage = () => {
   const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
   const { settings, loading: settingsLoading, error: settingsError } = useSettings();
   const { messages, newCount, loading: messagesLoading, error: messagesError } = useMessages();
+  const { orders, newCount: newOrdersCount } = useOrders();
 
   const errorMessage = itemsError || categoriesError || settingsError || messagesError;
 
@@ -60,8 +63,8 @@ export const DashboardPage = () => {
     const popular = items.filter((i) => i.isPopular).length;
     const catCount = categories.length;
 
-    return { total, available, soldOut, popular, catCount, newMessages: newCount };
-  }, [items, categories, newCount]);
+    return { total, available, soldOut, popular, catCount, newMessages: newCount, newOrders: newOrdersCount, totalOrders: orders.length };
+  }, [items, categories, newCount, newOrdersCount, orders.length]);
 
   // Sort by updatedAt descending (safely handles Firestore Timestamps or strings)
   const recentItems = useMemo(() => {
@@ -190,6 +193,32 @@ export const DashboardPage = () => {
         <CardSkeleton count={6} />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          {/* Active Orders */}
+          <Link
+            to="/orders"
+            className="bg-white/80 hover:bg-white p-4 sm:p-5 rounded-2xl border border-espresso/10 hover:border-amber-400 shadow-warm flex flex-col justify-between transition-all group"
+          >
+            <div className="flex items-center justify-between text-espresso/50 mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider group-hover:text-amber-800 transition-colors">
+                Live Orders
+              </span>
+              <ShoppingBag className="w-5 h-5 text-amber-600 flex-shrink-0" />
+            </div>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl sm:text-3xl font-serif font-bold text-espresso">
+                  {stats.newOrders}
+                </span>
+                <span className="text-[11px] font-bold text-amber-800 uppercase bg-amber-100 px-1.5 py-0.5 rounded">
+                  New
+                </span>
+              </div>
+              <p className="text-[11px] text-espresso/50 mt-1">
+                {stats.totalOrders} total registered
+              </p>
+            </div>
+          </Link>
+
           {/* New Messages */}
           <Link
             to="/messages"

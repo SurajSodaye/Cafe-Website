@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Plus, Check, ShoppingBag } from 'lucide-react';
 import { DietaryBadge, PopularBadge, SoldOutBadge } from '../ui/Badge';
 import { Card } from '../ui/Skeleton';
 import { SVG_FALLBACK_IMAGE, PRIMARY_FALLBACK_IMAGE } from '../../utils/imageFallback';
 
-export function MenuItemCard({ item }) {
+export function MenuItemCard({ item, onSelect }) {
   const [imgSrc, setImgSrc] = useState(item.imageUrl || PRIMARY_FALLBACK_IMAGE);
   const [hasError, setHasError] = useState(false);
 
@@ -27,13 +28,18 @@ export function MenuItemCard({ item }) {
 
   return (
     <Card
-      className={`group flex flex-col justify-between h-full ${
+      className={`group flex flex-col justify-between h-full transition-all duration-300 hover:shadow-warm-md hover:border-terracotta-200/80 ${
         !item.available ? 'opacity-75' : ''
       }`}
     >
       <div>
         {/* Image Container with fixed ratio */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-cream-100">
+        <div
+          onClick={() => onSelect && onSelect(item)}
+          className={`relative aspect-[16/10] overflow-hidden bg-cream-100 ${
+            onSelect ? 'cursor-pointer' : ''
+          }`}
+        >
           {!hasError ? (
             <img
               src={imgSrc}
@@ -41,7 +47,6 @@ export function MenuItemCard({ item }) {
               loading="lazy"
               decoding="async"
               referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
               width="600"
               height="375"
               onError={handleImageError}
@@ -70,7 +75,10 @@ export function MenuItemCard({ item }) {
         </div>
 
         {/* Content Body */}
-        <div className="p-5 space-y-2.5">
+        <div
+          onClick={() => onSelect && onSelect(item)}
+          className={`p-5 space-y-2.5 ${onSelect ? 'cursor-pointer' : ''}`}
+        >
           <div className="flex items-start justify-between gap-3">
             <h3 className="font-serif text-lg font-bold text-espresso-900 leading-snug group-hover:text-terracotta-600 transition-colors">
               {item.name}
@@ -80,16 +88,35 @@ export function MenuItemCard({ item }) {
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm text-espresso-600 leading-relaxed">
+          <p className="text-xs sm:text-sm text-espresso-600 leading-relaxed line-clamp-2">
             {item.description}
           </p>
         </div>
       </div>
 
-      {/* Subtle bottom note */}
-      <div className="px-5 pb-5 pt-0 flex items-center justify-between text-[11px] text-espresso-400 border-t border-espresso-50 mt-2">
-        <span className="capitalize">{(item.category || '').replace('-', ' ')}</span>
-        <span>{item.isVeg ? 'Vegetarian' : 'Non-Vegetarian'}</span>
+      {/* Footer: Category note + Add to Tray Action */}
+      <div className="px-5 pb-4 pt-1 flex items-center justify-between gap-2 border-t border-espresso-50 mt-1">
+        <span className="text-[11px] text-espresso-400 capitalize truncate">
+          {(item.category || '').replace('-', ' ')}
+        </span>
+
+        <button
+          type="button"
+          disabled={!item.available}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onSelect) onSelect(item);
+          }}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            item.available
+              ? 'bg-cream-100 hover:bg-terracotta-500 text-espresso-800 hover:text-white border border-espresso-200/80 hover:border-terracotta-500 shadow-xs'
+              : 'bg-espresso-100 text-espresso-400 cursor-not-allowed border border-espresso-200/40'
+          }`}
+          aria-label={item.available ? `Order ${item.name}` : `${item.name} is sold out`}
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>{item.available ? 'Add' : 'Sold Out'}</span>
+        </button>
       </div>
     </Card>
   );

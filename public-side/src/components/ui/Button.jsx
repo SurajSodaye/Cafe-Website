@@ -24,9 +24,11 @@ export function Button({
 
   const variants = {
     primary:
-      'bg-terracotta-500 hover:bg-terracotta-600 text-cream-50 shadow-warm-sm hover:shadow-warm-md focus-visible:ring-terracotta-600',
+      'bg-terracotta-600 hover:bg-terracotta-700 text-white shadow-warm-sm hover:shadow-warm-md focus-visible:ring-terracotta-600',
     secondary:
-      'bg-espresso-600 hover:bg-espresso-700 text-cream-100 shadow-warm-sm focus-visible:ring-espresso-800',
+      'bg-espresso-800 hover:bg-espresso-900 text-cream-100 shadow-warm-sm focus-visible:ring-espresso-800',
+    espresso:
+      'bg-espresso-900 hover:bg-espresso-950 text-cream-50 shadow-warm-sm hover:shadow-warm-md focus-visible:ring-espresso-800',
     sage:
       'bg-sage-200 hover:bg-sage-300 text-espresso-800 focus-visible:ring-sage-500',
     outline:
@@ -35,22 +37,32 @@ export function Button({
       'border-2 border-terracotta-500 text-terracotta-600 hover:bg-terracotta-500 hover:text-white focus-visible:ring-terracotta-500',
     ghost:
       'text-espresso-700 hover:bg-espresso-100/60 focus-visible:ring-espresso-400',
+    none: ''
   };
 
   const sizes = {
     sm: 'text-xs px-3 py-1.5 gap-1.5',
     md: 'text-sm px-4 py-2.5 gap-2',
     lg: 'text-base px-6 py-3.5 gap-2.5 font-semibold',
+    none: ''
   };
 
-  const combinedClasses = `${baseStyles} ${variants[variant] || variants.primary} ${sizes[size] || sizes.md} ${className}`;
+  const variantClass = variant === 'none' ? '' : (variants[variant] || variants.primary);
+  const sizeClass = size === 'none' ? '' : (sizes[size] || sizes.md);
+  const combinedClasses = `${baseStyles} ${variantClass} ${sizeClass} ${className}`.trim();
+
+  const content = (
+    <>
+      {Icon && iconPosition === 'left' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
+      {typeof children === 'string' ? <span>{children}</span> : children}
+      {Icon && iconPosition === 'right' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
+    </>
+  );
 
   if (to) {
     return (
       <Link to={to} className={combinedClasses} aria-label={ariaLabel} {...rest}>
-        {Icon && iconPosition === 'left' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
-        <span>{children}</span>
-        {Icon && iconPosition === 'right' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
+        {content}
       </Link>
     );
   }
@@ -65,9 +77,7 @@ export function Button({
         rel={rest.rel || 'noopener noreferrer'}
         {...rest}
       >
-        {Icon && iconPosition === 'left' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
-        <span>{children}</span>
-        {Icon && iconPosition === 'right' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
+        {content}
       </a>
     );
   }
@@ -81,9 +91,7 @@ export function Button({
       aria-label={ariaLabel}
       {...rest}
     >
-      {Icon && iconPosition === 'left' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
-      <span>{children}</span>
-      {Icon && iconPosition === 'right' && <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />}
+      {content}
     </button>
   );
 }
