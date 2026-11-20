@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SVG_FALLBACK_IMAGE } from '../../utils/imageFallback';
+import { SVG_FALLBACK_IMAGE, PRIMARY_FALLBACK_IMAGE } from '../../utils/imageFallback';
 
 export function Lightbox({ images = [], selectedIndex = null, onClose, onNavigate }) {
   const isOpen = selectedIndex !== null && images.length > 0;
@@ -84,7 +84,7 @@ export function Lightbox({ images = [], selectedIndex = null, onClose, onNavigat
 
         {/* Main Content */}
         <motion.div
-          key={currentImage.id}
+          key={currentImage.id || selectedIndex}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
@@ -92,14 +92,14 @@ export function Lightbox({ images = [], selectedIndex = null, onClose, onNavigat
           className="relative max-w-4xl max-h-[85vh] flex flex-col items-center z-10 pointer-events-auto"
         >
           <img
-            src={currentImage.imageUrl}
-            alt={currentImage.alt}
+            src={currentImage.imageUrl || currentImage.thumbnailUrl || PRIMARY_FALLBACK_IMAGE}
+            alt={currentImage.alt || currentImage.caption || currentImage.title || 'Brew & Bloom Café'}
             decoding="async"
-            referrerPolicy="no-referrer"
-            crossOrigin="anonymous"
             onError={(e) => {
               if (currentImage.thumbnailUrl && e.currentTarget.src !== currentImage.thumbnailUrl) {
                 e.currentTarget.src = currentImage.thumbnailUrl;
+              } else if (e.currentTarget.src !== PRIMARY_FALLBACK_IMAGE && e.currentTarget.src !== SVG_FALLBACK_IMAGE) {
+                e.currentTarget.src = PRIMARY_FALLBACK_IMAGE;
               } else {
                 e.currentTarget.src = SVG_FALLBACK_IMAGE;
               }
@@ -108,10 +108,10 @@ export function Lightbox({ images = [], selectedIndex = null, onClose, onNavigat
           />
           <div className="mt-4 text-center text-cream-100 px-4">
             <h4 className="font-serif text-lg sm:text-xl font-semibold">
-              {currentImage.title}
+              {currentImage.title || currentImage.caption || 'Café Moment'}
             </h4>
             <p className="text-xs sm:text-sm text-cream-200/80 mt-1 max-w-lg mx-auto">
-              {currentImage.alt}
+              {currentImage.alt || currentImage.caption || currentImage.title}
             </p>
           </div>
         </motion.div>

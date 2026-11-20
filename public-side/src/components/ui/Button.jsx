@@ -33,6 +33,8 @@ export function Button({
       'bg-sage-200 hover:bg-sage-300 text-espresso-800 focus-visible:ring-sage-500',
     outline:
       'border-2 border-espresso-600 text-espresso-700 hover:bg-espresso-600 hover:text-cream-50 focus-visible:ring-espresso-600',
+    outlineLight:
+      'border-2 border-cream-200/80 text-cream-50 hover:bg-cream-50 hover:text-espresso-900 focus-visible:ring-cream-200',
     outlineTerracotta:
       'border-2 border-terracotta-500 text-terracotta-600 hover:bg-terracotta-500 hover:text-white focus-visible:ring-terracotta-500',
     ghost:

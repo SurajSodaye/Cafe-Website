@@ -69,11 +69,9 @@ export function GalleryPreview() {
               >
                 <img
                   src={img.thumbnailUrl || img.imageUrl || PRIMARY_FALLBACK_IMAGE}
-                  alt={img.alt}
+                  alt={img.alt || img.title || 'Brew & Bloom Café'}
                   loading="lazy"
                   decoding="async"
-                  referrerPolicy="no-referrer"
-                  crossOrigin="anonymous"
                   width="600"
                   height="600"
                   onError={(e) => {

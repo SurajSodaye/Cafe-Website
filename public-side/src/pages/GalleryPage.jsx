@@ -15,7 +15,7 @@ export default function GalleryPage() {
 
   const filteredImages = selectedCategory === 'All'
     ? images
-    : images.filter((img) => img.category.toLowerCase() === selectedCategory.toLowerCase());
+    : images.filter((img) => (img.category || '').toLowerCase() === selectedCategory.toLowerCase());
 
   return (
     <>
@@ -81,11 +81,11 @@ export default function GalleryPage() {
           )}
 
           {/* Images Grid */}
-          {!loading && !error && (
+          {!loading && !error && filteredImages.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
               {filteredImages.map((image, idx) => (
                 <div
-                  key={image.id}
+                  key={image.id || idx}
                   onClick={() => setLightboxIndex(idx)}
                   className="group relative aspect-square rounded-2xl overflow-hidden bg-espresso-100 cursor-pointer shadow-warm-sm hover:shadow-warm-md border border-espresso-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500"
                   role="button"
@@ -96,15 +96,13 @@ export default function GalleryPage() {
                       setLightboxIndex(idx);
                     }
                   }}
-                  aria-label={`Open photo: ${image.title}`}
+                  aria-label={`Open photo: ${image.title || image.caption}`}
                 >
                   <img
                     src={image.thumbnailUrl || image.imageUrl || PRIMARY_FALLBACK_IMAGE}
-                    alt={image.alt}
+                    alt={image.alt || image.title || 'Brew & Bloom Café'}
                     loading="lazy"
                     decoding="async"
-                    referrerPolicy="no-referrer"
-                    crossOrigin="anonymous"
                     width="600"
                     height="600"
                     onError={(e) => {
@@ -135,6 +133,32 @@ export default function GalleryPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !error && filteredImages.length === 0 && (
+            <div className="text-center py-16 px-4 bg-white/60 rounded-3xl border border-espresso-100/80 max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-full bg-cream-200 text-espresso-600 flex items-center justify-center mx-auto mb-3">
+                <Camera className="w-6 h-6" />
+              </div>
+              <h3 className="font-serif text-lg font-bold text-espresso-900 mb-1">
+                No photos found
+              </h3>
+              <p className="text-sm text-espresso-600 mb-4">
+                {selectedCategory === 'All'
+                  ? 'There are no gallery photos available right now.'
+                  : `No photos currently available in the "${selectedCategory}" category.`}
+              </p>
+              {selectedCategory !== 'All' && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory('All')}
+                  className="text-xs font-semibold text-terracotta-600 hover:text-terracotta-700 underline underline-offset-4"
+                >
+                  View all photos
+                </button>
+              )}
             </div>
           )}
         </div>

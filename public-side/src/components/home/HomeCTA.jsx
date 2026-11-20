@@ -47,10 +47,10 @@ export function HomeCTA({ cafeInfo }) {
               </Button>
               <Button
                 href={`tel:${cafeInfo?.phoneRaw || '+919876543210'}`}
-                variant="outline"
+                variant="outlineLight"
                 size="lg"
                 icon={Phone}
-                className="w-full justify-center border-cream-200 text-cream-50 hover:bg-cream-50 hover:text-espresso-900"
+                className="w-full justify-center font-semibold tracking-wide border-cream-200/90 text-cream-50 hover:bg-cream-50 hover:text-espresso-950 transition-all shadow-sm"
               >
                 Call {cafeInfo?.phone || '+91 98765 43210'}
               </Button>

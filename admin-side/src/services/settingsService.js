@@ -118,12 +118,13 @@ export const settingsService = {
       });
 
       // 4. Gallery Photos
-      initialGallery.forEach((photo) => {
+      initialGallery.forEach((photo, idx) => {
         const photoRef = doc(db, 'gallery', photo.id);
         batch.set(
           photoRef,
           {
             ...photo,
+            order: photo.order ?? (idx + 1),
             updatedAt: serverTimestamp(),
             createdAt: serverTimestamp()
           },
